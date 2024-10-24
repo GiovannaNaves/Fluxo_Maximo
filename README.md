@@ -1,3 +1,3 @@
 Giovanna Naves Ribeiro
 
-Compilar com "make".
+Compilar e rodar com "make run".

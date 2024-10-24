@@ -2,22 +2,26 @@
 #define GRAFO_HPP
 
 #include <vector>
+#include <climits>
+#include <iostream>
+#include <queue>
+#include <fstream>
+#include <sstream>
+
 using namespace std;
 
 class Grafo {
 private:
     int V; 
-    vector<vector<int>> adj; 
+    vector<vector<int>> capacidade; 
     vector<int> tempoDescoberta; 
-    vector<int> tempoTermino; 
-    int tempo; 
+    bool bfs(int s, int t, vector<int>& parent);
 
 public:
     Grafo(int V);
-    void adicionaAresta(int v, int w);
-    void ordenaAdjacencias();
-    void DFS(int v, int x);
-    void iniciaDFS(int verticeInicial);
+    void adicionarAresta(int u, int v, int cap);
+    int fluxoMaximo(int s, int t);
+    void carregarDeArquivo(const string& nomeArquivo);
 };
 
 #endif

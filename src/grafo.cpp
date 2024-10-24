@@ -1,59 +1,79 @@
 #include "grafo.hpp"
-#include <iostream>
-#include <algorithm>
 
 using namespace std;
 
-Grafo::Grafo(int V) {
-    this->V = V;
-    adj.resize(V);
-    tempoDescoberta.resize(V, 0);
-    tempoTermino.resize(V, 0);
-    tempo = 0;
+Grafo::Grafo(int V) : V(V), capacidade(V, vector<int>(V, 0)) {}
+
+void Grafo::adicionarAresta(int u, int v, int cap) {
+    capacidade[u][v] = cap;
 }
 
-void Grafo::adicionaAresta(int v, int w) {
-    adj[v].push_back(w);
-    adj[w].push_back(v);
-}
+bool Grafo::bfs(int s, int t, vector<int>& parent) {
+    vector<bool> visitado(V, false);
+    queue<int> fila;
+    fila.push(s);
+    visitado[s] = true;
+    parent[s] = -1;
 
-void Grafo::ordenaAdjacencias() {
-    for (int i = 0; i < V; i++) {
-        sort(adj[i].begin(), adj[i].end());
-    }
-}
+    while (!fila.empty()) {
+        int u = fila.front();
+        fila.pop();
 
-void Grafo::DFS(int v, int x) {
-    tempo++;
-    tempoDescoberta[v] = tempo;
-
-    for (int u : adj[v]) {
-        if (tempoDescoberta[u] == 0) {
-            if (v == x) {
-                cout << "Árvore: (" << x << ", " << u << ")"<< endl;
-            }
-            DFS(u, x);
-        } else if (v == x) {
-            if (tempoDescoberta[u] > 0 && tempoTermino[u] == 0) {
-                cout << "Retorno: (" << x << ", " << u << ")"<< endl;
-            } else if (tempoDescoberta[u] > tempoDescoberta[v]) {
-                cout << "Avanço: (" << x << ", " << u << ")"<< endl;
-            } else {
-                cout << "Cruzamento: (" << x << ", " << u << ")"<< endl;
+        for (int v = 0; v < V; v++) {
+            if (!visitado[v] && capacidade[u][v] > 0) {
+                if (v == t) {
+                    parent[v] = u;
+                    return true;
+                }
+                fila.push(v);
+                parent[v] = u;
+                visitado[v] = true;
             }
         }
     }
-
-    tempo++;
-    tempoTermino[v] = tempo;
+    return false;
 }
 
-void Grafo::iniciaDFS(int x) {
-    ordenaAdjacencias();
+int Grafo::fluxoMaximo(int s, int t) {
+    int fluxoMaximo = 0;
+    vector<int> parent(V);
 
-    for (int i = 0; i < V; i++) {
-        if (tempoDescoberta[i] == 0) {
-            DFS(i, x); 
+    while (bfs(s, t, parent)) {
+        int fluxoCaminho = INT_MAX;
+        for (int v = t; v != s; v = parent[v]) {
+            int u = parent[v];
+            fluxoCaminho = min(fluxoCaminho, capacidade[u][v]);
         }
+
+        for (int v = t; v != s; v = parent[v]) {
+            int u = parent[v];
+            capacidade[u][v] -= fluxoCaminho;
+            capacidade[v][u] += fluxoCaminho;
+        }
+
+        fluxoMaximo += fluxoCaminho;
     }
+
+    return fluxoMaximo;
+}
+
+void Grafo::carregarDeArquivo(const string& nomeArquivo) {
+    ifstream arquivo(nomeArquivo);
+
+    if (!arquivo.is_open()) {
+        cerr << "Erro ao abrir o arquivo." << endl;
+        return;
+    }
+
+    int numArestas;
+    arquivo >> V >> numArestas;
+    capacidade.resize(V, vector<int>(V, 0));
+
+    int u, v, cap;
+    for (int i = 0; i < numArestas; i++) {
+        arquivo >> u >> v >> cap;
+        adicionarAresta(u, v, cap);
+    }
+
+    arquivo.close();
 }
