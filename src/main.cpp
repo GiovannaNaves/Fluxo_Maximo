@@ -8,7 +8,7 @@ int main() {
     Grafo g(0);
     int origem, destino;
 
-    g.carregarDeArquivo("bipartido2000.txt", origem, destino);
+    g.carregarDeArquivo("bipartido800.txt", origem, destino);
 
     auto inicio = chrono::high_resolution_clock::now();
     int fluxo = g.fluxoMaximo(origem, destino);
