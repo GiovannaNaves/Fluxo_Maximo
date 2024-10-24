@@ -57,7 +57,7 @@ int Grafo::fluxoMaximo(int s, int t) {
     return fluxoMaximo;
 }
 
-void Grafo::carregarDeArquivo(const string& nomeArquivo) {
+void Grafo::carregarDeArquivo(const string& nomeArquivo, int& origem, int& destino) {
     ifstream arquivo(nomeArquivo);
 
     if (!arquivo.is_open()) {
@@ -65,9 +65,11 @@ void Grafo::carregarDeArquivo(const string& nomeArquivo) {
         return;
     }
 
+    arquivo >> origem >> destino;
+
     int numArestas;
     arquivo >> V >> numArestas;
-    capacidade.resize(V, vector<int>(V, 0));
+    capacidade.resize(V, std::vector<int>(V, 0));
 
     int u, v, cap;
     for (int i = 0; i < numArestas; i++) {

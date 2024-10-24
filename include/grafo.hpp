@@ -21,7 +21,7 @@ public:
     Grafo(int V);
     void adicionarAresta(int u, int v, int cap);
     int fluxoMaximo(int s, int t);
-    void carregarDeArquivo(const string& nomeArquivo);
+    void carregarDeArquivo(const string& nomeArquivo, int& origem, int& destino);
 };
 
 #endif
